@@ -15,12 +15,12 @@ export type ForgotPasswordType = {
   email: string
 }
 export type ResetPasswordType = {
-  new_password: string
-  confirm_new_password: string
+  password: string
+  confirm_password: string
 }
 export type ChangePasswordType = {
-  new_password: string
-  confirm_new_password: string
+  password: string
+  confirm_password: string
 }
 
 export type AuthStoreType = {

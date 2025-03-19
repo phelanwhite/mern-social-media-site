@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { PostType } from '../types/post.type'
 import { useAuthStore } from '@/features/authentication/stores/auth.store'
 import { FaRegCommentAlt } from 'react-icons/fa'
@@ -95,4 +95,4 @@ const PostCard = () => {
   )
 }
 
-export default PostCard
+export default memo(PostCard)

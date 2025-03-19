@@ -1,5 +1,6 @@
 @import url('./variable.css');
 @import url('./lib.css');
+@import url('./_import.css');
 
 @tailwind base;
 @tailwind components;

@@ -14,6 +14,43 @@ import {
   MdOutlineHome,
 } from 'react-icons/md'
 
+export const header_links = {
+  list1: [
+    {
+      icon: <MdOutlineHome />,
+      name: 'Home',
+      path: '/',
+    },
+    {
+      icon: <MdOutlineGroup />,
+      name: 'Friends',
+      path: '/friends',
+    },
+    {
+      icon: <MdOutlineAmpStories />,
+      name: 'Stories',
+      path: '/stories',
+    },
+  ],
+  list2: [
+    {
+      icon: <HiOutlineUserGroup />,
+      name: 'Groups',
+      path: '/groups',
+    },
+    {
+      icon: <AiOutlineComment />,
+      name: 'Messages',
+      path: '/messages',
+    },
+    {
+      icon: <IoIosNotificationsOutline />,
+      name: 'Notifications',
+      path: '/notifications',
+    },
+  ],
+}
+
 export const nav_links = [
   {
     icon: <MdOutlineArticle />,

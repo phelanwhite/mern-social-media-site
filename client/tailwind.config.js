@@ -12,6 +12,9 @@ export default {
       fontSize: {
         13: '13px',
       },
+      aspectRatio: {
+        '9/13': '9/13',
+      },
       colors: {
         bgColorBox: 'var(--bgColorBox)',
         textColorSecondary: 'var(--textColorSecondary)',
