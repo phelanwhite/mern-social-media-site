@@ -1,6 +1,7 @@
 import React, { memo } from 'react'
 import { StoryType } from '../types/story.type'
 import { useAuthStore } from '@/features/authentication/stores/auth.store'
+import { IMAGE_NOTFOUND } from '@/constants/image.constant'
 
 const data: StoryType = {
   _id: `1`,
@@ -12,10 +13,14 @@ const data: StoryType = {
 
 const StoryCard = () => {
   return (
-    <div className="bg-bgColorBox rounded-lg relative overflow-hidden aspect-9/13">
+    <div className="bg-bgColorBox rounded-lg relative overflow-hidden aspect-story cursor-pointer">
       <img src={data.file} alt={data.file} loading="lazy" />
       <div className="absolute top-1 left-1 w-8 aspect-square rounded-full overflow-hidden">
-        <img src={data.user?.avatar} alt={data.user?.avatar} loading="lazy" />
+        <img
+          src={data.user?.avatar || IMAGE_NOTFOUND.AVATAR_NOTFOUND}
+          alt={data.user?.avatar || IMAGE_NOTFOUND.AVATAR_NOTFOUND}
+          loading="lazy"
+        />
       </div>
     </div>
   )

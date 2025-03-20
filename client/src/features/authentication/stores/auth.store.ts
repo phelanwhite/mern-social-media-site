@@ -26,10 +26,14 @@ export const useAuthStore = create<AuthStoreType>()(
         signin: async (data) => {
           const url = baseUrl + `signin`
           const response = await (
-            await axiosInstance.post<ResponseSuccessType<UserType>>(url, data)
+            await axiosInstance.post<
+              ResponseSuccessType<{
+                user: UserType
+              }>
+            >(url, data)
           ).data
           if (response.status === 200) {
-            set({ user: response.data, isAuthenticated: true })
+            set({ user: response.data.user, isAuthenticated: true })
           }
           return response
         },
@@ -87,6 +91,9 @@ export const useAuthStore = create<AuthStoreType>()(
           const response = await (
             await axiosInstance.put<ResponseSuccessType<UserType>>(url, data)
           ).data
+          if (response.status === 200) {
+            set({ user: response.data })
+          }
           return response
         },
         changePassword: async (data) => {

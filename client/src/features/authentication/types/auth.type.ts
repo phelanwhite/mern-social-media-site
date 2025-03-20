@@ -28,7 +28,11 @@ export type AuthStoreType = {
   isAuthenticated: boolean
 
   signup: (data: SignupType) => Promise<ResponseSuccessType>
-  signin: (data: SigninType) => Promise<ResponseSuccessType<UserType>>
+  signin: (data: SigninType) => Promise<
+    ResponseSuccessType<{
+      user: UserType
+    }>
+  >
   signout: () => Promise<ResponseSuccessType>
   forgotPassword: (data: ForgotPasswordType) => Promise<ResponseSuccessType>
   resetPassword: (data: ResetPasswordType) => Promise<ResponseSuccessType>

@@ -24,7 +24,7 @@ const PostCardButton = () => {
   return (
     <div className="p-3 rounded-lg bg-bgColorBox space-y-2">
       <div className="flex items-stretch gap-3">
-        <div className="w-8 overflow-hidden rounded-full">
+        <div className="w-8 aspect-square overflow-hidden rounded-full">
           <img
             src={user?.avatar || IMAGE_NOTFOUND.AVATAR_NOTFOUND}
             alt={user?.avatar}

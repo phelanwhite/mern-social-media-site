@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import { PostFormStore } from '../types/post.type'
+import { PostFormStoreType } from '../types/post.type'
 
-export const usePostFormStore = create<PostFormStore>()((set) => ({
+export const usePostFormStore = create<PostFormStoreType>()((set) => ({
   open: false,
   post: null,
   handleClose: () => set({ open: false }),

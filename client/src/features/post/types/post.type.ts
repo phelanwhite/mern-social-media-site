@@ -13,7 +13,7 @@ export type PostType = {
   totals_comments: number
 }
 
-export type PostFormStore = {
+export type PostFormStoreType = {
   open: boolean
   post: PostType | null
   handleClose: () => void

@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { HiDotsHorizontal } from 'react-icons/hi'
+import { IMAGE_NOTFOUND } from '@/constants/image.constant'
 
 const data: PostType = {
   _id: '1',
@@ -34,8 +35,8 @@ const PostCard = () => {
         <div className="flex items-center gap-2">
           <div className="aspect-square w-8 rounded-full overflow-hidden">
             <img
-              src={data.user?.avatar}
-              alt={data.user?.avatar}
+              src={data.user?.avatar || IMAGE_NOTFOUND.AVATAR_NOTFOUND}
+              alt={data.user?.avatar || IMAGE_NOTFOUND.AVATAR_NOTFOUND}
               loading="lazy"
             />
           </div>

@@ -29,6 +29,7 @@ passportConfig.use(
           new: true,
         },
       )
+
       if (!userExists) {
         // hash password
         const hashedPassword = await hashPassword(body.sub)

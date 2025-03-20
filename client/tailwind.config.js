@@ -13,7 +13,7 @@ export default {
         13: '13px',
       },
       aspectRatio: {
-        '9/13': '9/13',
+        story: '9/14',
       },
       colors: {
         bgColorBox: 'var(--bgColorBox)',
