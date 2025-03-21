@@ -19,6 +19,9 @@ const schema = new Schema(
       type: String,
       required: true,
     },
+    nickName: {
+      type: String,
+    },
     phoneNumber: {
       type: String,
     },

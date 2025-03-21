@@ -4,7 +4,7 @@ import { ResponseSuccessListType, ResponseSuccessType } from '@/utils/type'
 export type StoryType = {
   _id: string
   user: UserType | null
-  file: string
+  file_url: string
   createdAt: string
   updatedAt: string
 }
@@ -18,7 +18,8 @@ export type StoryFormStoreType = {
 
 export type StoryStoreType = {
   datas: StoryType[]
-  getDatasByMe: () => Promise<ResponseSuccessListType<StoryType>>
+  getAll: (query?: string) => Promise<ResponseSuccessListType<StoryType>>
+  getDatasByMe: (query?: string) => Promise<ResponseSuccessListType<StoryType>>
   create: (data: FormData) => Promise<ResponseSuccessType<StoryType>>
   deleteById: (id: string) => Promise<ResponseSuccessType<StoryType>>
 }

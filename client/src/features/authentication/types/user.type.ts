@@ -5,6 +5,7 @@ export type UserType = {
   role: string
   avatar: string
   name: string
+  nickName: string
   phoneNumber: string
   address: string
   birthday: string

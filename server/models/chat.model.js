@@ -1,16 +1,23 @@
 import mongoose, { Schema } from 'mongoose'
 const schema = new Schema(
   {
-    user: {
+    sender: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+      required: true,
+    },
+    receiver: {
       type: Schema.Types.ObjectId,
       ref: 'user',
       required: true,
     },
     content: {
       type: String,
+      required: true,
     },
-    file_url: {
+    file: {
       type: String,
+      required: true,
     },
   },
   {
@@ -18,10 +25,6 @@ const schema = new Schema(
   },
 )
 
-schema.pre('save', function () {
-  return this.populate([`user`])
-})
+const chatModel = mongoose.models.chat || mongoose.model('chat', schema)
 
-const postModel = mongoose.models.post || mongoose.model('post', schema)
-
-export default postModel
+export default chatModel

@@ -6,8 +6,21 @@ import StoryCardButton from '@/features/story/components/StoryCardButton'
 import WrapperComponent from '@/components/layout/WrapperComponent'
 import PostCardButton from '@/features/post/components/PostCardButton'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { useStoryStore } from '@/features/story/stores/story.store'
+import { useQuery } from '@tanstack/react-query'
+import { usePostStore } from '@/features/post/stores/post.store'
 
 const HomePage = () => {
+  const { getAll: getStories, datas: stories } = useStoryStore()
+  const getStoriesResult = useQuery({
+    queryKey: ['stories'],
+    queryFn: async () => await getStories(),
+  })
+  const { getAll: getPosts, datas: posts } = usePostStore()
+  const getPostsResult = useQuery({
+    queryKey: ['posts'],
+    queryFn: async () => await getPosts(),
+  })
   return (
     <WrapperComponent className="flex items-start gap-6">
       <Left />
@@ -34,9 +47,9 @@ const HomePage = () => {
           <SwiperSlide>
             <StoryCardButton />
           </SwiperSlide>
-          {Array.from({ length: 10 }).map((item, idx) => (
-            <SwiperSlide key={idx}>
-              <StoryCard />
+          {stories.map((item) => (
+            <SwiperSlide key={item._id}>
+              <StoryCard data={item} />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -44,12 +57,9 @@ const HomePage = () => {
         <PostCardButton />
         {/* posts */}
         <div className="space-y-4">
-          <PostCard />
-          <PostCard />
-          <PostCard />
-          <PostCard />
-          <PostCard />
-          <PostCard />
+          {posts.map((item) => (
+            <PostCard key={item._id} data={item} />
+          ))}
         </div>
       </section>
       <Right />

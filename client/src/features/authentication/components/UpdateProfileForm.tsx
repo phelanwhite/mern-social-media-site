@@ -32,6 +32,7 @@ const formSchema = z.object({
   name: z.string().min(3, {
     message: 'Name must be at least 3 characters long',
   }),
+  nickName: z.string(),
   phoneNumber: z.string(),
   address: z.string(),
   birthday: z.string(),
@@ -73,6 +74,7 @@ const UpdateProfileForm = () => {
     defaultValues: {
       avatar: '',
       name: '',
+      nickName: '',
       phoneNumber: '',
       address: '',
       birthday: '',
@@ -147,6 +149,19 @@ const UpdateProfileForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="nickName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nick name</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

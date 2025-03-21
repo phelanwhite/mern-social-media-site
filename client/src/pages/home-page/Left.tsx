@@ -4,7 +4,7 @@ import { nav_links } from '@/constants/link.constant'
 import { useAuthStore } from '@/features/authentication/stores/auth.store'
 import clsx from 'clsx'
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 
 const Left = () => {
   const { user } = useAuthStore()
@@ -33,7 +33,9 @@ const Left = () => {
         <div className="mt-10 text-center space-y-1">
           <h6>{user?.name}</h6>
           <p className="text-textColorSecondary">142 followers</p>
-          <Button size={'sm'}>My Profile</Button>
+          <Link to={`/profile/` + user?._id}>
+            <Button size={'sm'}>My Profile</Button>
+          </Link>
         </div>
       </div>
       {/* nav list */}

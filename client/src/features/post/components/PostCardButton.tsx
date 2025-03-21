@@ -2,6 +2,7 @@ import { IMAGE_NOTFOUND } from '@/constants/image.constant'
 import { useAuthStore } from '@/features/authentication/stores/auth.store'
 import { RiFlagFill, RiImageAiFill, RiLiveFill } from 'react-icons/ri'
 import { usePostFormStore } from '../stores/post.form.store'
+import { Link } from 'react-router-dom'
 
 const actions = [
   {
@@ -24,13 +25,16 @@ const PostCardButton = () => {
   return (
     <div className="p-3 rounded-lg bg-bgColorBox space-y-2">
       <div className="flex items-stretch gap-3">
-        <div className="w-8 aspect-square overflow-hidden rounded-full">
+        <Link
+          to={`/profile/` + user?._id}
+          className="w-8 aspect-square overflow-hidden rounded-full"
+        >
           <img
             src={user?.avatar || IMAGE_NOTFOUND.AVATAR_NOTFOUND}
             alt={user?.avatar}
             loading="lazy"
           />
-        </div>
+        </Link>
         <div
           onClick={handleOpen}
           className="bg-gray-100 text-textColorSecondary w-full rounded-lg flex items-center px-2 cursor-pointer"

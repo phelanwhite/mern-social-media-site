@@ -14,27 +14,55 @@ import {
 } from '@/components/ui/dialog'
 import { usePostFormStore } from '../stores/post.form.store'
 import { PostType } from '../types/post.type'
+import { usePostStore } from '../stores/post.store'
+import { useMutation } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 
 const PostCreateUpdateForm = () => {
   const { user } = useAuthStore()
+  const { create } = usePostStore()
+  const createResult = useMutation({
+    mutationFn: async () => {
+      const formData = new FormData()
+
+      Object.entries(formValue).forEach(([key, value]) => {
+        formData.append(key, value as string)
+      })
+
+      if (file) {
+        formData.append('file', file)
+      }
+      return await create(formData)
+    },
+    onSuccess: (data) => {
+      toast.success(data.message)
+      onOpenChange()
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
 
   const { open, handleClose } = usePostFormStore()
   const onSubmit = (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // submit form
+    createResult.mutate()
   }
   const [formValue, setFormValue] = useState<Partial<PostType>>({
     content: '',
-    file: '',
+    file_url: '',
   })
   const [file, setFile] = useState<File | null>(null)
+  const onOpenChange = () => {
+    handleClose()
+    setFormValue({ content: '', file_url: '' })
+    setFile(null)
+  }
   return (
     <Dialog
       open={open}
       onOpenChange={() => {
-        handleClose()
-        setFormValue({ content: '', file: '' })
-        setFile(null)
+        onOpenChange()
       }}
     >
       <DialogContent>
@@ -92,11 +120,15 @@ const PostCreateUpdateForm = () => {
             </div>
           </div>
           <Button
-            disabled={!file && !formValue?.content ? true : false}
+            disabled={
+              (!file && !formValue?.content) || createResult.isPending
+                ? true
+                : false
+            }
             type="submit"
             className="w-full"
           >
-            Submit
+            {createResult.isPending ? 'Loading...' : 'Create'}{' '}
           </Button>
         </form>
       </DialogContent>
