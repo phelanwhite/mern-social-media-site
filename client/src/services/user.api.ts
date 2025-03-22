@@ -1,5 +1,5 @@
 import axiosInstance from '@/configs/axios.config'
-import { ResponseSuccessListType, ResponseSuccessType } from '@/utils/type'
+import { ResponseSuccessType } from '@/utils/type'
 import { UserType } from '@/features/authentication/types/user.type'
 
 const baseUrl = `v1/user/`

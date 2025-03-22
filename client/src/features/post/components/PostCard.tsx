@@ -17,14 +17,12 @@ import { Link } from 'react-router-dom'
 import { usePostStore } from '../stores/post.store'
 import { useMutation } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
+import CommentContainer from '@/features/comment/components/CommentContainer'
 
 const PostCard = ({ data }: { data: PostType }) => {
-  const { saveUnsave, deleteById } = usePostStore()
+  const { saveUnsave, likeUnlike, deleteById } = usePostStore()
   // save
   const [checkSave, setCheckSave] = useState(false)
-  useEffect(() => {
-    setCheckSave(data.isSaved)
-  }, [data.isSaved])
   const saveUnsaveResult = useMutation({
     mutationFn: async () => saveUnsave(data._id),
     onSuccess: (data) => {
@@ -35,6 +33,21 @@ const PostCard = ({ data }: { data: PostType }) => {
       toast.error(error.message)
     },
   })
+  const [checkLike, setCheckLike] = useState(false)
+  const likeUnlikeResult = useMutation({
+    mutationFn: async () => likeUnlike(data._id),
+    onSuccess: (data) => {
+      toast.success(data.message)
+      setCheckLike(!checkLike)
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+  useEffect(() => {
+    setCheckSave(data.isSaved)
+    setCheckLike(data.isLiked)
+  }, [data])
   // delete
   const deleteByIdResult = useMutation({
     mutationFn: async () => deleteById(data._id),
@@ -45,6 +58,9 @@ const PostCard = ({ data }: { data: PostType }) => {
       toast.error(error.message)
     },
   })
+  const handleDelete = () => {
+    deleteByIdResult.mutate()
+  }
   // copy
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.origin + `/post/${data._id}`)
@@ -79,9 +95,7 @@ const PostCard = ({ data }: { data: PostType }) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => deleteByIdResult.mutate()}>
-              Delete
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => saveUnsaveResult.mutate()}>
               {checkSave ? `Unsave` : `Save`}
@@ -107,25 +121,30 @@ const PostCard = ({ data }: { data: PostType }) => {
       </div>
       {/* footer */}
       <div className="flex items-center justify-between gap-2">
-        <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 text-textColorSecondary text-xs">
-          <AiOutlineLike />
+        <button
+          onClick={() => likeUnlikeResult.mutate()}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 text-textColorSecondary text-xs"
+        >
+          <AiOutlineLike className={checkLike ? `text-blue-500` : ``} />
           <p className="border-l-2 leading-none pl-2">
-            {data.totals_comments} <span>Likes</span>
+            {data.total_likes} <span>{checkLike ? `UnLike` : `Like`}</span>
           </p>
         </button>
         <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 text-textColorSecondary text-xs">
           <FaRegCommentAlt />
           <p className="border-l-2 leading-none pl-2">
-            {data.totals_comments} <span>Comments</span>
+            {data.total_comments} <span>Comments</span>
           </p>
         </button>
         <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 text-textColorSecondary text-xs">
           <RiShareForwardLine />
           <p className="border-l-2 leading-none pl-2">
-            {data.totals_comments} <span>Share</span>
+            {data.total_comments} <span>Share</span>
           </p>
         </button>
       </div>
+      {/* comment */}
+      <CommentContainer postId={data._id} />
     </div>
   )
 }

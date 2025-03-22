@@ -63,8 +63,10 @@ storyRouter.get(`/get-me`, authProtectedRouter, async (req, res, next) => {
 
     const getDatas = await storyModel
       .find(filter)
+      .populate([`user`])
       .limit(_limit)
       .skip((_page - 1) * _limit + _skip)
+      .sort({ createdAt: -1 })
 
     const total_rows = await storyModel.countDocuments(filter)
     const total_pages = Math.ceil(total_rows / _limit)
@@ -76,7 +78,7 @@ storyRouter.get(`/get-me`, authProtectedRouter, async (req, res, next) => {
       paginations: {
         total_rows,
         total_pages,
-        current_page: 1,
+        current_page: _page,
         limit: _limit,
         skip: _skip,
       },

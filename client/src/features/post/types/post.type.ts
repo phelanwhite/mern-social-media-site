@@ -11,8 +11,8 @@ export type PostType = {
 
   isLiked: boolean
   isSaved: boolean
-  totals_likes: number
-  totals_comments: number
+  total_likes: number
+  total_comments: number
 }
 
 export type PostFormStoreType = {
@@ -27,6 +27,15 @@ export type PostStoreType = {
   getAll: (query?: string) => Promise<ResponseSuccessListType<PostType>>
   getDatasByMe: (query?: string) => Promise<ResponseSuccessListType<PostType>>
   create: (data: FormData) => Promise<ResponseSuccessType<PostType>>
-  saveUnsave: (post: string) => Promise<ResponseSuccessType<PostType>>
   deleteById: (id: string) => Promise<ResponseSuccessType<PostType>>
+
+  // save
+  posts_save: PostType[]
+  getSaveByMe: (query?: string) => Promise<ResponseSuccessListType<PostType>>
+  saveUnsave: (post: string) => Promise<ResponseSuccessType<PostType>>
+
+  // like
+  posts_like: PostType[]
+  getLikeByMe: (query?: string) => Promise<ResponseSuccessListType<PostType>>
+  likeUnlike: (post: string) => Promise<ResponseSuccessType<PostType>>
 }

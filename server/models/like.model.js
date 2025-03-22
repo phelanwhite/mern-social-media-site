@@ -6,19 +6,9 @@ const schema = new Schema(
       ref: 'user',
       required: true,
     },
-    content: {
-      type: String,
-    },
-    file_url: {
-      type: String,
-    },
     post: {
       type: Schema.Types.ObjectId,
       ref: 'post',
-    },
-    comment: {
-      type: Schema.Types.ObjectId,
-      ref: 'comment',
     },
   },
   {
@@ -26,21 +16,22 @@ const schema = new Schema(
   },
 )
 
-schema.pre('save', function () {
+schema.pre('save', function (next) {
   return this.populate([
     {
       path: 'user',
     },
     {
       path: 'post',
-    },
-    {
-      path: 'comment',
+      populate: [
+        {
+          path: 'user',
+        },
+      ],
     },
   ])
 })
 
-const commentModel =
-  mongoose.models.comment || mongoose.model('comment', schema)
+const likeModel = mongoose.models.like || mongoose.model('like', schema)
 
-export default commentModel
+export default likeModel

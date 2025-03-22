@@ -28,7 +28,9 @@ export const useStoryStore = create<StoryStoreType>()((set, get) => ({
     const resp = (
       await axiosInstance.post<ResponseSuccessType<StoryType>>(url, data)
     ).data
-    set({ datas: [resp.data, ...get().datas] })
+    if (resp.status === 201) {
+      set({ datas: [resp.data, ...get().datas] })
+    }
     return resp
   },
   deleteById: async (id) => {
@@ -36,7 +38,9 @@ export const useStoryStore = create<StoryStoreType>()((set, get) => ({
     const resp = (
       await axiosInstance.delete<ResponseSuccessType<StoryType>>(url)
     ).data
-    set({ datas: get().datas.filter((item) => item._id !== id) })
+    if (resp.status === 200) {
+      set({ datas: get().datas.filter((item) => item._id !== id) })
+    }
     return resp
   },
 }))

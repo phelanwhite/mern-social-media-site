@@ -5,6 +5,7 @@ import {
   handleResponseList,
 } from '#server/helpers/responses.helper'
 import { authProtectedRouter } from '#server/middlewares/auth.middleware'
+import likeModel from '#server/models/like.model'
 import postModel from '#server/models/post.model'
 import saveModel from '#server/models/save.model'
 import { customPostData } from '#server/utils/post.util'
@@ -99,7 +100,7 @@ postRouter.get(`/get-user/:id/photo`, async (req, res, next) => {
       paginations: {
         total_rows,
         total_pages,
-        current_page: 1,
+        current_page: _page,
         limit: _limit,
         skip: _skip,
       },
@@ -115,47 +116,6 @@ postRouter.get(`/get-me`, authProtectedRouter, async (req, res, next) => {
       {
         $match: {
           user: new Types.ObjectId(req.user._id),
-        },
-      },
-    ]
-
-    const getDatas = await customPostData({ req, filter })
-
-    return handleResponseList(res, {
-      status: StatusCodes.OK,
-      message: 'Posts fetched successfully',
-      results: getDatas.posts,
-      paginations: {
-        total_rows: getDatas.total_rows,
-        total_pages: getDatas.total_pages,
-        current_page: getDatas._page,
-        limit: getDatas._limit,
-        skip: getDatas._skip,
-      },
-    })
-  } catch (error) {
-    next(error)
-  }
-})
-postRouter.get(`/get-saved`, authProtectedRouter, async (req, res, next) => {
-  try {
-    const filter = [
-      {
-        $lookup: {
-          from: 'saves',
-          localField: '_id',
-          foreignField: 'post',
-          as: 'saved',
-        },
-      },
-      {
-        $match: {
-          'saved.user': new Types.ObjectId(req.user._id),
-        },
-      },
-      {
-        $project: {
-          saved: 0,
         },
       },
     ]
@@ -208,6 +168,67 @@ postRouter.post(
     }
   },
 )
+postRouter.delete(
+  `/delete/:id`,
+  authProtectedRouter,
+  async (req, res, next) => {
+    try {
+      const id = req.params.id
+      const deleteData = await postModel.findByIdAndDelete(id, { new: true })
+
+      return handleResponse(res, {
+        status: StatusCodes.OK,
+        message: 'Post deleted successfully',
+        data: deleteData,
+      })
+    } catch (error) {
+      next(error)
+    }
+  },
+)
+
+// save
+postRouter.get(`/get-save`, authProtectedRouter, async (req, res, next) => {
+  try {
+    const filter = [
+      {
+        $lookup: {
+          from: 'saves',
+          localField: '_id',
+          foreignField: 'post',
+          as: 'saved',
+        },
+      },
+      {
+        $match: {
+          'saved.user': new Types.ObjectId(req.user._id),
+        },
+      },
+      {
+        $project: {
+          saved: 0,
+        },
+      },
+    ]
+
+    const getDatas = await customPostData({ req, filter })
+
+    return handleResponseList(res, {
+      status: StatusCodes.OK,
+      message: 'Posts fetched successfully',
+      results: getDatas.posts,
+      paginations: {
+        total_rows: getDatas.total_rows,
+        total_pages: getDatas.total_pages,
+        current_page: getDatas._page,
+        limit: getDatas._limit,
+        skip: getDatas._skip,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+})
 postRouter.post(`/save-unsave`, authProtectedRouter, async (req, res, next) => {
   try {
     const body = req.body
@@ -242,23 +263,80 @@ postRouter.post(`/save-unsave`, authProtectedRouter, async (req, res, next) => {
     next(error)
   }
 })
-postRouter.delete(
-  `/delete/:id`,
-  authProtectedRouter,
-  async (req, res, next) => {
-    try {
-      const id = req.params.id
-      const deleteData = await postModel.findByIdAndDelete(id, { new: true })
+// like
+postRouter.get(`/get-like`, authProtectedRouter, async (req, res, next) => {
+  try {
+    const filter = [
+      {
+        $lookup: {
+          from: 'likes',
+          localField: '_id',
+          foreignField: 'post',
+          as: 'liked',
+        },
+      },
+      {
+        $match: {
+          'liked.user': new Types.ObjectId(req.user._id),
+        },
+      },
+      {
+        $project: {
+          liked: 0,
+        },
+      },
+    ]
 
+    const getDatas = await customPostData({ req, filter })
+
+    return handleResponseList(res, {
+      status: StatusCodes.OK,
+      message: 'Posts fetched successfully',
+      results: getDatas.posts,
+      paginations: {
+        total_rows: getDatas.total_rows,
+        total_pages: getDatas.total_pages,
+        current_page: getDatas._page,
+        limit: getDatas._limit,
+        skip: getDatas._skip,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+postRouter.post(`/like-unlike`, authProtectedRouter, async (req, res, next) => {
+  try {
+    const body = req.body
+    const user = req.user
+
+    const check = await likeModel.findOne({
+      user: user._id,
+      post: body.post,
+    })
+
+    if (check) {
+      const removeData = await likeModel.findByIdAndDelete(check._id, {
+        new: true,
+      })
       return handleResponse(res, {
         status: StatusCodes.OK,
-        message: 'Post deleted successfully',
-        data: deleteData,
+        message: 'Unliked post successfully',
+        data: removeData,
       })
-    } catch (error) {
-      next(error)
     }
-  },
-)
+    const newData = await likeModel.create({
+      user: user._id,
+      post: body.post,
+    })
 
+    return handleResponse(res, {
+      status: StatusCodes.CREATED,
+      message: 'Liked post successfully',
+      data: newData,
+    })
+  } catch (error) {
+    next(error)
+  }
+})
 export default postRouter

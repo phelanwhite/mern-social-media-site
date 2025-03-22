@@ -1,14 +1,14 @@
 import { QUERY_PARAMETER } from '#server/constants/query.constant'
-import postModel from '#server/models/post.model'
+import commentModel from '#server/models/comment.model'
 import { Types } from 'mongoose'
 
-export async function customPostData({ req, filter }) {
+export async function customCommentData({ req, filter }) {
   const _page = parseInt(req.query._page) || QUERY_PARAMETER._PAGE
   const _limit = parseInt(req.query._limit) || QUERY_PARAMETER._LIMIT
   const _skip = parseInt(req.query._skip) || QUERY_PARAMETER._SKIP
   const _tracking_id = req.query._tracking_id
 
-  const posts = await postModel.aggregate([
+  const comments = await commentModel.aggregate([
     ...filter,
     // populate
     {
@@ -22,27 +22,34 @@ export async function customPostData({ req, filter }) {
     {
       $unwind: '$user',
     },
-    // save
     {
       $lookup: {
-        from: 'saves',
-        localField: '_id',
-        foreignField: 'post',
-        as: 'isSaved',
-        pipeline: [{ $match: { user: new Types.ObjectId(_tracking_id) } }],
+        from: 'posts',
+        localField: 'post',
+        foreignField: '_id',
+        as: 'post',
       },
     },
     {
-      $addFields: {
-        isSaved: { $gt: [{ $size: '$isSaved' }, 0] },
+      $unwind: '$post',
+    },
+    {
+      $lookup: {
+        from: 'comments',
+        localField: 'comment',
+        foreignField: '_id',
+        as: 'comment_parent',
       },
     },
+    // {
+    //   $unwind: '$comment_parent',
+    // },
     // like
     {
       $lookup: {
         from: 'likes',
         localField: '_id',
-        foreignField: 'post',
+        foreignField: 'comment',
         as: 'isLiked',
         pipeline: [{ $match: { user: new Types.ObjectId(_tracking_id) } }],
       },
@@ -51,7 +58,7 @@ export async function customPostData({ req, filter }) {
       $lookup: {
         from: 'likes',
         localField: '_id',
-        foreignField: 'post',
+        foreignField: 'comment',
         as: 'total_likes',
       },
     },
@@ -66,13 +73,13 @@ export async function customPostData({ req, filter }) {
       $lookup: {
         from: 'comments',
         localField: '_id',
-        foreignField: 'post',
-        as: 'total_comments',
+        foreignField: 'comment',
+        as: 'total_replies',
       },
     },
     {
       $addFields: {
-        total_comments: { $size: '$total_comments' },
+        total_replies: { $size: '$total_replies' },
       },
     },
 
@@ -91,7 +98,7 @@ export async function customPostData({ req, filter }) {
   ])
 
   const total_rows = (
-    await postModel.aggregate([
+    await commentModel.aggregate([
       ...filter,
       {
         $count: 'count',
@@ -101,5 +108,5 @@ export async function customPostData({ req, filter }) {
 
   const total_pages = Math.ceil(total_rows / _limit)
 
-  return { posts, total_rows, total_pages, _page, _limit, _skip }
+  return { comments, total_rows, total_pages, _page, _limit, _skip }
 }

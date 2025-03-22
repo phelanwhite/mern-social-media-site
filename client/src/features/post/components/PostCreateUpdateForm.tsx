@@ -114,7 +114,7 @@ const PostCreateUpdateForm = () => {
                   onChange={(e) => setFile(e.target.files?.[0] as File)}
                 />
               </label>
-              <button className="">
+              <button type="button" className="">
                 <MdEmojiEmotions size={18} />
               </button>
             </div>

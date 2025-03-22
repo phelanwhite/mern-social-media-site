@@ -6,11 +6,83 @@ import {
 } from '#server/helpers/responses.helper'
 import { authProtectedRouter } from '#server/middlewares/auth.middleware'
 import commentModel from '#server/models/comment.model'
+import { customCommentData } from '#server/utils/comment.util'
 import { uploadImageToCloudinary } from '#server/utils/storage.util'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
+import { Types } from 'mongoose'
 
 const commentRouter = express.Router()
+
+commentRouter.get(`/get-post/:id`, async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    const filter = [
+      {
+        $match: {
+          $and: [
+            {
+              post: new Types.ObjectId(id),
+              comment: { $exists: false },
+            },
+          ],
+        },
+      },
+    ]
+
+    const getDatas = await customCommentData({ req, filter })
+
+    return handleResponseList(res, {
+      status: StatusCodes.OK,
+      message: 'Comments fetched successfully',
+      results: getDatas.comments,
+      paginations: {
+        total_rows: getDatas.total_rows,
+        total_pages: getDatas.total_pages,
+        current_page: getDatas._page,
+        limit: getDatas._limit,
+        skip: getDatas._skip,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+commentRouter.get(`/get-comment/:id`, async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    const filter = [
+      {
+        $match: {
+          $and: [
+            {
+              comment: new Types.ObjectId(id),
+            },
+          ],
+        },
+      },
+    ]
+
+    const getDatas = await customCommentData({ req, filter })
+
+    return handleResponseList(res, {
+      status: StatusCodes.OK,
+      message: 'Replies fetched successfully',
+      results: getDatas.comments,
+      paginations: {
+        total_rows: getDatas.total_rows,
+        total_pages: getDatas.total_pages,
+        current_page: getDatas._page,
+        limit: getDatas._limit,
+        skip: getDatas._skip,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+})
 
 // auth
 commentRouter.get(`/get-me`, authProtectedRouter, async (req, res, next) => {
@@ -39,7 +111,7 @@ commentRouter.get(`/get-me`, authProtectedRouter, async (req, res, next) => {
       paginations: {
         total_rows,
         total_pages,
-        current_page: 1,
+        current_page: _page,
         limit: _limit,
         skip: _skip,
       },
@@ -58,19 +130,19 @@ commentRouter.post(
       const user = req.user
       const file = req.file
 
-      let file_url = body.file
+      let file_url = body.file_url
       if (file) {
         file_url = (await uploadImageToCloudinary(file)).url
       }
       const newData = await commentModel.create({
         ...body,
         user: user._id,
-        file: file_url,
+        file_url: file_url,
       })
 
       return handleResponse(res, {
         status: StatusCodes.CREATED,
-        message: 'Post created successfully',
+        message: 'Comment created successfully',
         data: newData,
       })
     } catch (error) {
@@ -88,7 +160,7 @@ commentRouter.delete(
 
       return handleResponse(res, {
         status: StatusCodes.OK,
-        message: 'Post deleted successfully',
+        message: 'Comment deleted successfully',
         data: deleteData,
       })
     } catch (error) {
